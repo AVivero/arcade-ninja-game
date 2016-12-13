@@ -16,6 +16,7 @@
 
 const player = require('./app.js').player;
 const allEnemies = require('./app.js').allEnemies;
+const allGems = require('./app.js').allGems;
 
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
@@ -27,10 +28,10 @@ var Engine = (function(global) {
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         lastTime;
-
     canvas.width = 505;
     canvas.height = 606;
     doc.body.appendChild(canvas);
+    ctx.font = "20px Georgia";
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
@@ -61,6 +62,7 @@ var Engine = (function(global) {
          */
         win.requestAnimationFrame(main);
     }
+
 
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
@@ -96,8 +98,17 @@ var Engine = (function(global) {
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
+            player.playerCollisionEnemy(enemy);
+        });
+        allGems.forEach(function(gem) {
+            player.playerCollisionGem(gem);
         });
         player.update();
+    }
+
+    function printScore() {
+        ctx.clearRect(0, 0, 400, 40);
+        ctx.fillText("Score: " + player.score, 220, 20);
     }
 
     /* This function initially draws the "game level", it will then call
@@ -153,7 +164,11 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render(ctx);
         });
+        allGems.forEach(function(gem) {
+            gem.render(ctx);
+        });
         player.render(ctx);
+        printScore();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -173,7 +188,8 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/gem-green.png'
     ]);
     Resources.onReady(init);
 
